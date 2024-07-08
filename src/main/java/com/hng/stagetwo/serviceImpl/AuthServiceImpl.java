@@ -51,8 +51,8 @@ public class AuthServiceImpl implements AuthService {
             organizationRepository.save(organization);
             user.addOrganization(organization);
             User savedUser = userRepository.save(user);
-            String token = jwtTokenService.createToken(user.getEmail(), user.getRoleAsList());
-            ResponseDto responseDto = infoGetter.generateRegistrationResponse(savedUser, token);
+            String accessToken = jwtTokenService.createToken(user.getEmail(), user.getRoleAsList());
+            ResponseDto responseDto = infoGetter.generateRegistrationResponse(savedUser, accessToken);
             return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
     @Override

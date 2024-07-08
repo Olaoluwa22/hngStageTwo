@@ -20,6 +20,7 @@ public class DefaultExceptionHandler {
         exceptionResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.UNPROCESSABLE_ENTITY);
     }
+    
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> methodArgumentNotValidaException(MethodArgumentNotValidException exception) {
         ErrorResponse errorResponse = new ErrorResponse();
@@ -28,6 +29,7 @@ public class DefaultExceptionHandler {
         }
         return new ResponseEntity<>(errorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
     }
+    
     @ExceptionHandler(InvalidCredentialException.class)
     public ResponseEntity<?> invalidCredentialException(InvalidCredentialException exception) {
         ExceptionResponse<?> exceptionResponse = new ExceptionResponse<>();
@@ -36,6 +38,7 @@ public class DefaultExceptionHandler {
         exceptionResponse.setStatusCode(HttpStatus.UNAUTHORIZED.value());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.UNAUTHORIZED);
     }
+    
     @ExceptionHandler(UnsuccessfulRegistrationException.class)
     public ResponseEntity<?> unsuccessfulRegistrationException(UnsuccessfulRegistrationException exception) {
         ExceptionResponse<?> exceptionResponse = new ExceptionResponse<>();
@@ -44,6 +47,7 @@ public class DefaultExceptionHandler {
         exceptionResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
+    
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> resourceNotFoundException(ResourceNotFoundException exception) {
         ExceptionResponse<?> exceptionResponse = new ExceptionResponse<>();
@@ -52,6 +56,7 @@ public class DefaultExceptionHandler {
         exceptionResponse.setStatusCode(HttpStatus.NOT_FOUND.value());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
     }
+    
     @ExceptionHandler(UnsuccessfulCreationException.class)
     public ResponseEntity<?> unsuccessfulCreationException(UnsuccessfulCreationException exception) {
         ExceptionResponse<?> exceptionResponse = new ExceptionResponse<>();

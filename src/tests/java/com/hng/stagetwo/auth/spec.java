@@ -43,7 +43,7 @@ public class spec {
 
     @Test
     void shouldRegisterUserSuccessfullyWithDefaultOrganization() throws Exception {
-        String userJson = "{ \"firstName\": \"John\", \"lastName\": \"Doe\", \"email\": \"johndoe@example.com\", \"password\": \"password\", \"phone\": \"09012345678\" }";
+        String userJson = "{ \"firstName\": \"John\", \"lastName\": \"Smith\", \"email\": \"johnsmith@example.com\", \"password\": \"password\", \"phone\": \"09012345678\" }";
 
         mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -52,12 +52,12 @@ public class spec {
                 .andExpect(jsonPath("$.message").value("Registration Successful"))
                 .andExpect(jsonPath("$.data.user.userId").isNotEmpty())
                 .andExpect(jsonPath("$.data.user.firstName").value("John"))
-                .andExpect(jsonPath("$.data.user.lastName").value("Doe"))
-                .andExpect(jsonPath("$.data.user.email").value("johndoe@example.com"))
+                .andExpect(jsonPath("$.data.user.lastName").value("Smith"))
+                .andExpect(jsonPath("$.data.user.email").value("johnsmith@example.com"))
                 .andExpect(jsonPath("$.data.user.phone").value("09012345678"))
                 .andExpect(jsonPath("$.data.accessToken").isNotEmpty());
 
-        User user = userRepository.findByEmail("johndoe@example.com").orElse(null);
+        User user = userRepository.findByEmail("johnsmith@example.com").orElse(null);
         List<Organization> organization = organizationRepository.findByUsers_Id(user.getId());
 
         assertNotNull(user);
@@ -68,7 +68,7 @@ public class spec {
     void shouldFailIfRequiredFieldsAreMissing() throws Exception {
         String[] requiredFields = {"firstName", "lastName", "email", "password"};
         for (String field : requiredFields) {
-            String userJson = "{ \"firstName\": \"John\", \"lastName\": \"Doe\", \"email\": \"john.doe@example.com\", \"password\": \"password\" }";
+            String userJson = "{ \"firstName\": \"John\", \"lastName\": \"Smith\", \"email\": \"johnsmith@example.com\", \"password\": \"password\" }";
             ObjectMapper mapper = new ObjectMapper();
             JsonNode node = mapper.readTree(userJson);
             ((ObjectNode) node).remove(field);
@@ -83,13 +83,13 @@ public class spec {
     }
     @Test
     void shouldFailIfDuplicateEmailIsUsed() throws Exception {
-        String userJson = "{ \"firstName\": \"John\", \"lastName\": \"Doe\", \"email\": \"johndoe@example.com\", \"password\": \"password\", \"phone\": \"09012345678\" }";
+        String userJson = "{ \"firstName\": \"John\", \"lastName\": \"Smith\", \"email\": \"johnsmith@example.com\", \"password\": \"password\", \"phone\": \"09012345678\" }";
         mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userJson))
                 .andExpect(status().isCreated());
 
-        String duplicateUserJson = "{ \"firstName\": \"Jane\", \"lastName\": \"Doe\", \"email\": \"johndoe@example.com\", \"password\": \"password\",  \"phone\": \"09012345678\" }";
+        String duplicateUserJson = "{ \"firstName\": \"Jane\", \"lastName\": \"Mary\", \"email\": \"johnsmith@example.com\", \"password\": \"password\",  \"phone\": \"09012345678\" }";
         mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(duplicateUserJson))
@@ -99,22 +99,22 @@ public class spec {
     @Test
     void shouldLoginUserSuccessfully() throws Exception {
         // First register the user
-        String userJson = "{ \"firstName\": \"John\", \"lastName\": \"Doe\", \"email\": \"johndoe@example.com\", \"password\": \"password\", \"phone\": \"09012345678\" }";
+        String userJson = "{ \"firstName\": \"John\", \"lastName\": \"Smith\", \"email\": \"johnsmith@example.com\", \"password\": \"password\", \"phone\": \"09012345678\" }";
         mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userJson))
                 .andExpect(status().isCreated());
 
         // Then try to log in
-        String loginJson = "{ \"email\": \"johndoe@example.com\", \"password\": \"password\" }";
+        String loginJson = "{ \"email\": \"johnsmith@example.com\", \"password\": \"password\" }";
         mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.user.userId").isNotEmpty())
                 .andExpect(jsonPath("$.data.user.firstName").value("John"))
-                .andExpect(jsonPath("$.data.user.lastName").value("Doe"))
-                .andExpect(jsonPath("$.data.user.email").value("johndoe@example.com"))
+                .andExpect(jsonPath("$.data.user.lastName").value("Smith"))
+                .andExpect(jsonPath("$.data.user.email").value("johnsmith@example.com"))
                 .andExpect(jsonPath("$.data.user.phone").value("09012345678"))
                 .andExpect(jsonPath("$.data.accessToken").isNotEmpty());
     }

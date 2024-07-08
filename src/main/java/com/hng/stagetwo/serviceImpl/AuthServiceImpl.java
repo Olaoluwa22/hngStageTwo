@@ -38,7 +38,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<?> registerUser(RegistrationRequestDto requestDto) {
-        try {
             infoGetter.verifyEmail(requestDto.getEmail());
             User user = new User();
             user.setUserId(infoGetter.generateUniqueId());
@@ -48,18 +47,13 @@ public class AuthServiceImpl implements AuthService {
             user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
             user.setPhone(requestDto.getPhone());
             user.setRole(ConstantMessages.ROLE_IS_USER.getMessage());
-            Organization organization = organizationService.createOrganization(user.getFirstName(), user.getUserId());
+            Organization organization = organizationService.createDefaultOrganization(user.getFirstName(), user.getUserId());
             organizationRepository.save(organization);
             user.addOrganization(organization);
             User savedUser = userRepository.save(user);
             String token = jwtTokenService.createToken(user.getEmail(), user.getRoleAsList());
             ResponseDto responseDto = infoGetter.generateRegistrationResponse(savedUser, token);
             return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
-
-        }catch(EmailAlreadyExistException exception){
-            exception.getMessage();
-        }
-        throw new UnsuccessfulRegistrationException(ConstantMessages.REGISTRATION_UNSUCCESSFUL.getMessage());
     }
     @Override
     public ResponseEntity<?> login(LoginRequestDto loginRequestDto) throws InvalidCredentialException {

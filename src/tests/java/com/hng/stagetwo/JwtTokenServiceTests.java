@@ -9,10 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.lang.reflect.Field;
 import java.security.Key;
 import java.util.List;
 
@@ -27,10 +27,8 @@ public class JwtTokenServiceTests {
     private UserDetailsServiceImpl userDetailsServiceImpl;
     @Mock
     private HttpServletRequest request;
-    @Value("${secret.key}")
-    private String secretKey;
-    @Value("${jwt.expiration}")
-    private long validityInMilliseconds;
+    private final String secretKey = "VGhpcyBpcyBhIHNlY3JldCBrZXkgZm9yIHRlc3Rpbmc=";
+    private long validityInMilliseconds = 600000; // 10 minutes
 
     @BeforeEach
     void setUp() {
@@ -38,6 +36,14 @@ public class JwtTokenServiceTests {
         jwtTokenService = new JwtTokenService();
         jwtTokenService.secretKey = secretKey;
         jwtTokenService.validityInMilliseconds = validityInMilliseconds;
+
+        try {
+            Field field = JwtTokenService.class.getDeclaredField("userDetailsServiceImpl");
+            field.setAccessible(true);
+            field.set(jwtTokenService, userDetailsServiceImpl);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test

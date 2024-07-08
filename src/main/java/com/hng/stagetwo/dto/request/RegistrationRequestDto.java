@@ -5,16 +5,15 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 public class RegistrationRequestDto {
-    @NotBlank
+    @NotNull
     private String firstName;
-    @NotBlank
+    @NotNull
     private String lastName;
-    @NotBlank
+    @NotNull
     @Pattern(regexp = "^[A-Za-z0-9]+@[A-Za-z0-9]+\\.[A-Za-z]{2,6}$", message = "Email should be valid")
     private String email;
     @NotNull
     private String password;
-    @NotBlank
     private String phone;
 
     public String getFirstName() {

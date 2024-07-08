@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class DefaultExceptionHandler {
     @ExceptionHandler(EmailAlreadyExistException.class)
     public ResponseEntity<?> emailAlreadyExistException(EmailAlreadyExistException exception) {
-        ErrorResponse errorResponse = new ErrorResponse();
-        errorResponse.addError("email", exception.getMessage());
-        return new ResponseEntity<>(errorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
+        ExceptionResponse<?> exceptionResponse = new ExceptionResponse<>();
+        exceptionResponse.setStatus(ConstantMessages.BAD_REQUEST.getMessage());
+        exceptionResponse.setMessage(ConstantMessages.REGISTRATION_UNSUCCESSFUL.getMessage());
+        exceptionResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.UNPROCESSABLE_ENTITY);
     }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> methodArgumentNotValidaException(MethodArgumentNotValidException exception) {

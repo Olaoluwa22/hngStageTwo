@@ -1,6 +1,5 @@
 package com.hng.stagetwo.serviceImpl;
 
-import com.hng.stagetwo.controller.OrganizationController;
 import com.hng.stagetwo.dto.request.AddUserRequest;
 import com.hng.stagetwo.dto.request.OrganizationRequestDto;
 import com.hng.stagetwo.dto.response.OrganizationResponseDto;
@@ -17,13 +16,14 @@ import com.hng.stagetwo.response.OrganizationsResponse;
 import com.hng.stagetwo.service.OrganizationService;
 import com.hng.stagetwo.utils.ConstantMessages;
 import com.hng.stagetwo.utils.InfoGetter;
-import jakarta.validation.spi.ConfigurationState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,7 +35,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Autowired
     private UserRepository userRepository;
     @Override
-    public Organization createOrganization(String userFirstName, String userId) {
+    public Organization createDefaultOrganization(String userFirstName, String userId) {
         Organization organization = new Organization();
         organization.setOrgId(infoGetter.generateOrganizationId());
         organization.setName(userFirstName +"'s organization");
@@ -96,6 +96,14 @@ public class OrganizationServiceImpl implements OrganizationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Organization not found"));
         User user = userRepository.findByUserId(request.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (organization.getUsers() instanceof Set) {
+            Set<User> mutableUsers = new HashSet<>(organization.getUsers());
+            mutableUsers.add(user);
+            organization.setUsers(mutableUsers);
+        } else {
+            organization.getUsers().add(user);
+        }
 
         organization.getUsers().add(user);
         user.addOrganization(organization);

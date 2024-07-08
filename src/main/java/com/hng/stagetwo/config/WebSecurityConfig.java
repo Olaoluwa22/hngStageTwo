@@ -35,7 +35,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/users/{id}").authenticated()
                         .requestMatchers("/api/organizations", "/api/organizations/{orgId}").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/organizations").authenticated()
-                        .requestMatchers("/api/organizations/{orgId}/users").authenticated()
+                        .requestMatchers("/api/organizations/{orgId}/users").permitAll()
                         .anyRequest().authenticated());
         return httpSecurity.build();
     }

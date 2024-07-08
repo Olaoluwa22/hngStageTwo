@@ -6,7 +6,7 @@ import com.hng.stagetwo.model.Organization;
 import org.springframework.http.ResponseEntity;
 
 public interface OrganizationService {
-    Organization createOrganization(String userFirstName,String userId);
+     Organization createDefaultOrganization(String userFirstName, String userId);
      ResponseEntity<?> getUserOrganizations();
      ResponseEntity<?> getOrganization(String orgId);
      ResponseEntity<?> createOrganization(OrganizationRequestDto requestDto);

@@ -20,6 +20,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
+    @Autowired
+    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
@@ -36,7 +38,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/organizations", "/api/organizations/{orgId}").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/organizations").authenticated()
                         .requestMatchers("/api/organizations/{orgId}/users").permitAll()
-                        .anyRequest().authenticated());
+                        .anyRequest().authenticated())
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(customAuthenticationEntryPoint));
         return httpSecurity.build();
     }
     @Bean

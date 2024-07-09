@@ -22,10 +22,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -126,19 +123,52 @@ public class OrganizationServiceImplTests {
         requestDto.setName("New Organization");
         requestDto.setDescription("Description");
 
-        when(infoGetter.generateOrganizationId()).thenReturn("3");
-        when(organizationRepository.save(any(Organization.class))).thenReturn(organization);
+        // Mocking the infoGetter methods
+        when(infoGetter.getEmailOfLoggedInUser()).thenReturn(loggedInUser.getEmail());
+        when(infoGetter.getUser(loggedInUser.getEmail())).thenReturn(loggedInUser);
+        when(infoGetter.generateOrganizationId()).thenReturn("AM_12345");
 
+        // Mocking the organizationRepository save method
+        Organization savedOrganization = new Organization();
+        savedOrganization.setOrgId("AM_12345");
+        savedOrganization.setName(requestDto.getName());
+        savedOrganization.setDescription(requestDto.getDescription());
+        savedOrganization.addUser(loggedInUser);
+
+        // Mocking the organizationRepository save method
+        when(organizationRepository.save(any(Organization.class))).thenAnswer(invocation -> {
+            Organization org = invocation.getArgument(0);
+            org.setId(1L); // Simulate database assigning an ID
+            return org;
+        });
+
+        // Mocking the userRepository findByEmail method
+        when(userRepository.findByEmail(loggedInUser.getEmail())).thenReturn(Optional.of(loggedInUser));
+
+        // Mocking the organizationRepository findByUsers_Id method
+        when(organizationRepository.findByUsers_Id(loggedInUser.getId())).thenReturn(List.of(savedOrganization));
+
+        // Perform the createOrganization request
         ResponseEntity<?> response = organizationService.createOrganization(requestDto);
 
+        // Validate the response
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         OrganizationResponse organizationResponse = (OrganizationResponse) response.getBody();
         assertNotNull(organizationResponse);
         assertEquals("Success", organizationResponse.getStatus());
         assertEquals("Organization created successfully", organizationResponse.getMessage());
-        assertEquals("3", organizationResponse.getData().getOrgId());
+        assertEquals("AM_12345", organizationResponse.getData().getOrgId());
         assertEquals(requestDto.getName(), organizationResponse.getData().getName());
         assertEquals(requestDto.getDescription(), organizationResponse.getData().getDescription());
+
+        // Validate that the user and organization are linked correctly
+        User user = userRepository.findByEmail(loggedInUser.getEmail()).orElse(null);
+        assertNotNull(user);
+
+        List<Organization> organizations = organizationRepository.findByUsers_Id(user.getId());
+        assertNotNull(organizations);
+        assertEquals(1, organizations.size());
+        assertEquals("New Organization", organizations.get(0).getName());
     }
     @Test
     void testAddUserToOrganizationSuccess() {

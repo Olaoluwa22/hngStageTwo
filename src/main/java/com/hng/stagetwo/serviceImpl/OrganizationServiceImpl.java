@@ -75,10 +75,12 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public ResponseEntity<?> createOrganization(OrganizationRequestDto requestDto) {
         try {
+            User loggedInUser = infoGetter.getUser(infoGetter.getEmailOfLoggedInUser());
             Organization organization = new Organization();
             organization.setOrgId(infoGetter.generateOrganizationId());
             organization.setName(requestDto.getName());
             organization.setDescription(requestDto.getDescription());
+            organization.addUser(loggedInUser);
             organizationRepository.save(organization);
             OrganizationResponse organizationResponse = new OrganizationResponse();
             organizationResponse.setStatus(ConstantMessages.SUCCESS.getMessage());
@@ -88,7 +90,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         }catch (Exception e){
             e.printStackTrace();
         }
-        throw new UnsuccessfulCreationException("Client Error");
+        throw new UnsuccessfulCreationException(ConstantMessages.CLIENT_ERROR.getMessage());
     }
     @Override
     public ResponseEntity<?> addUserToOrganization(String orgId, AddUserRequest request) {

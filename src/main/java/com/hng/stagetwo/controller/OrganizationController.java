@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/organizations")
+@RequestMapping("/api/organisations")
 public class OrganizationController {
     @Autowired
     private OrganizationService organizationService;

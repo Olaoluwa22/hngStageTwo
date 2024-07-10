@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/organisations")
-public class OrganizationController {
+public class OrganisationController {
     @Autowired
     private OrganizationService organizationService;
     @GetMapping
